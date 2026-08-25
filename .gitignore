@@ -1,0 +1,18 @@
+# Xcode & Swift Package Manager
+.build/
+.swiftpm/
+xcuserdata/
+*.xcuserdatad/
+DerivedData/
+
+# macOS system files
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+
+# Temporary files
+*.swp
+*~
+*.bak

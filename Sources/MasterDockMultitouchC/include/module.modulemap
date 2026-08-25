@@ -1,0 +1,4 @@
+module MasterDockMultitouchC [system] {
+    header "MultitouchSupportBridge.h"
+    export *
+}

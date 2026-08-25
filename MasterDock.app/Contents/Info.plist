@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleExecutable</key>
+    <string>MasterDock</string>
+    <key>CFBundleIdentifier</key>
+    <string>com.masterdock.app</string>
+    <key>CFBundleName</key>
+    <string>Master Dock</string>
+    <key>CFBundleDisplayName</key>
+    <string>Master Dock</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.0.0</string>
+    <key>CFBundleVersion</key>
+    <string>1</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>14.0</string>
+    <key>LSUIElement</key>
+    <true/>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Master Dock requires microphone access for interactive AI Voice Mode.</string>
+    <key>NSSpeechRecognitionUsageDescription</key>
+    <string>Master Dock requires speech recognition to transcribe your voice prompts in real time.</string>
+    <key>NSCalendarsUsageDescription</key>
+    <string>Master Dock requires calendar access to display today's upcoming meetings.</string>
+    <key>NSAppleEventsUsageDescription</key>
+    <string>Master Dock requires automation permissions to control Apple Music and Spotify playback.</string>
+    <key>NSHighResolutionCapable</key>
+    <true/>
+    <key>NSSupportsAutomaticGraphicsSwitching</key>
+    <true/>
+</dict>
+</plist>
