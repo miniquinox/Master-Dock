@@ -289,14 +289,15 @@ public struct MasterDockRootView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(
             ZStack {
-                // Apple Native Notification Center Backdrop Blur
-                VisualEffectBlur(material: .fullScreenUI, blendingMode: .behindWindow, state: .active)
+                // Real Apple Native Glass UI Backdrop
+                VisualEffectBlur(material: .hudWindow, blendingMode: .behindWindow, state: .active)
                 
-                // Translucent depth tint matching macOS Sequoia Notification Center
+                // Subtle specular top lighting edge
                 LinearGradient(
                     colors: [
-                        Color.black.opacity(0.30),
-                        Color.black.opacity(0.20)
+                        Color.white.opacity(0.06),
+                        Color.clear,
+                        Color.black.opacity(0.04)
                     ],
                     startPoint: .top,
                     endPoint: .bottom

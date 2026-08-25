@@ -4,8 +4,8 @@ public enum GlassTheme {
     // Apple Native Translucent Card Surfaces (Matching macOS Notification Center)
     public static let liquidGlassFill = LinearGradient(
         colors: [
-            Color(white: 0.20).opacity(0.70),
-            Color(white: 0.14).opacity(0.75)
+            Color(white: 0.22).opacity(0.60),
+            Color(white: 0.14).opacity(0.65)
         ],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
@@ -13,8 +13,8 @@ public enum GlassTheme {
     
     public static let liquidGlassHoverFill = LinearGradient(
         colors: [
-            Color(white: 0.26).opacity(0.78),
-            Color(white: 0.18).opacity(0.82)
+            Color(white: 0.28).opacity(0.70),
+            Color(white: 0.18).opacity(0.75)
         ],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
@@ -22,8 +22,8 @@ public enum GlassTheme {
     
     public static let pillGlassFill = LinearGradient(
         colors: [
-            Color.white.opacity(0.12),
-            Color.white.opacity(0.04)
+            Color.white.opacity(0.15),
+            Color.white.opacity(0.06)
         ],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
@@ -32,10 +32,10 @@ public enum GlassTheme {
     // Apple Delicate Specular Rim Bevels
     public static let liquidSpecularBorder = LinearGradient(
         colors: [
-            Color.white.opacity(0.25),
-            Color.white.opacity(0.08),
-            Color.white.opacity(0.03),
-            Color.white.opacity(0.15)
+            Color.white.opacity(0.35),
+            Color.white.opacity(0.12),
+            Color.white.opacity(0.04),
+            Color.white.opacity(0.20)
         ],
         startPoint: .topLeading,
         endPoint: .bottomTrailing

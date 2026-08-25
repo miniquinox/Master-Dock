@@ -14,7 +14,7 @@ public final class DockPanel: NSPanel {
         
         self.isOpaque = false
         self.backgroundColor = .clear
-        self.hasShadow = false
+        self.hasShadow = true
         self.level = .floating
         self.collectionBehavior = [
             .canJoinAllSpaces,
