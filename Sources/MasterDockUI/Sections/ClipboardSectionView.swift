@@ -65,7 +65,6 @@ public struct ClipboardSectionView: View {
                             .background(
                                 Capsule()
                                     .fill(selectedFilter == filter ? AnyShapeStyle(GlassTheme.accentBlue.opacity(0.9)) : AnyShapeStyle(GlassTheme.pillGlassFill))
-                                    .background(Capsule().fill(.ultraThinMaterial))
                             )
                             .overlay(
                                 Capsule()
@@ -212,8 +211,7 @@ private struct ClipboardItemRow: View {
             .padding(.vertical, 8)
             .background(
                 RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .fill(isRecentlyCopied ? AnyShapeStyle(GlassTheme.accentEmerald.opacity(0.15)) : (isHovered ? AnyShapeStyle(GlassTheme.liquidGlassHoverFill) : AnyShapeStyle(GlassTheme.pillGlassFill)))
-                    .background(RoundedRectangle(cornerRadius: 12, style: .continuous).fill(.ultraThinMaterial))
+                    .fill(isRecentlyCopied ? AnyShapeStyle(GlassTheme.accentEmerald.opacity(0.20)) : (isHovered ? AnyShapeStyle(GlassTheme.pillGlassFill) : AnyShapeStyle(Color.white.opacity(0.06))))
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 12, style: .continuous)

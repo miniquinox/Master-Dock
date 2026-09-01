@@ -177,8 +177,7 @@ public struct MasterDockRootView: View {
                                 .padding(.vertical, 5)
                                 .background(
                                     Capsule()
-                                        .fill(selectedTab == tab ? AnyShapeStyle(GlassTheme.accentBlue.opacity(0.85)) : AnyShapeStyle(GlassTheme.pillGlassFill))
-                                        .background(Capsule().fill(.ultraThinMaterial))
+                                        .fill(selectedTab == tab ? AnyShapeStyle(GlassTheme.accentBlue.opacity(0.90)) : AnyShapeStyle(GlassTheme.pillGlassFill))
                                 )
                                 .overlay(
                                     Capsule()

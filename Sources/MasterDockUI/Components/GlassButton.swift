@@ -47,10 +47,6 @@ public struct GlassButton: View {
             .background(
                 RoundedRectangle(cornerRadius: GlassTheme.pillRadius, style: .continuous)
                     .fill(buttonFillStyle)
-                    .background(
-                        RoundedRectangle(cornerRadius: GlassTheme.pillRadius, style: .continuous)
-                            .fill(.ultraThinMaterial)
-                    )
             )
             .overlay(
                 RoundedRectangle(cornerRadius: GlassTheme.pillRadius, style: .continuous)
@@ -120,10 +116,6 @@ public struct GlassSearchBar: View {
         .background(
             RoundedRectangle(cornerRadius: GlassTheme.pillRadius, style: .continuous)
                 .fill(searchFillStyle)
-                .background(
-                    RoundedRectangle(cornerRadius: GlassTheme.pillRadius, style: .continuous)
-                        .fill(.ultraThinMaterial)
-                )
         )
         .overlay(
             RoundedRectangle(cornerRadius: GlassTheme.pillRadius, style: .continuous)

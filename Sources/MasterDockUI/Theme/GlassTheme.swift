@@ -1,11 +1,11 @@
 import SwiftUI
 
 public enum GlassTheme {
-    // Apple Native Translucent Card Surfaces (Matching macOS Notification Center)
+    // Apple Native Rich Translucent Card Surfaces (High Contrast, Less Transparency)
     public static let liquidGlassFill = LinearGradient(
         colors: [
-            Color(white: 0.18).opacity(0.48),
-            Color(white: 0.10).opacity(0.54)
+            Color(red: 0.14, green: 0.15, blue: 0.18).opacity(0.92),
+            Color(red: 0.09, green: 0.10, blue: 0.12).opacity(0.95)
         ],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
@@ -13,8 +13,8 @@ public enum GlassTheme {
     
     public static let liquidGlassHoverFill = LinearGradient(
         colors: [
-            Color(white: 0.24).opacity(0.58),
-            Color(white: 0.14).opacity(0.64)
+            Color(red: 0.18, green: 0.19, blue: 0.23).opacity(0.94),
+            Color(red: 0.12, green: 0.13, blue: 0.16).opacity(0.97)
         ],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
@@ -22,8 +22,8 @@ public enum GlassTheme {
     
     public static let pillGlassFill = LinearGradient(
         colors: [
-            Color.white.opacity(0.12),
-            Color.white.opacity(0.05)
+            Color.white.opacity(0.13),
+            Color.white.opacity(0.06)
         ],
         startPoint: .topLeading,
         endPoint: .bottomTrailing

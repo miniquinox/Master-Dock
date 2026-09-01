@@ -263,8 +263,7 @@ private struct ChatMessageBubble: View {
                     .padding(.vertical, 8)
                     .background(
                         RoundedRectangle(cornerRadius: 14, style: .continuous)
-                            .fill(GlassTheme.accentBlue.opacity(0.85))
-                            .background(RoundedRectangle(cornerRadius: 14, style: .continuous).fill(.ultraThinMaterial))
+                            .fill(GlassTheme.accentBlue.opacity(0.90))
                     )
                     .overlay(
                         RoundedRectangle(cornerRadius: 14, style: .continuous)

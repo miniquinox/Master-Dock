@@ -244,8 +244,7 @@ private struct ChecklistItemRow: View {
             .padding(.vertical, 8)
             .background(
                 RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .fill(item.isCompleted ? AnyShapeStyle(GlassTheme.accentEmerald.opacity(0.10)) : (isHovered ? AnyShapeStyle(GlassTheme.liquidGlassHoverFill) : AnyShapeStyle(GlassTheme.pillGlassFill)))
-                    .background(RoundedRectangle(cornerRadius: 12, style: .continuous).fill(.ultraThinMaterial))
+                    .fill(item.isCompleted ? AnyShapeStyle(GlassTheme.accentEmerald.opacity(0.18)) : (isHovered ? AnyShapeStyle(GlassTheme.pillGlassFill) : AnyShapeStyle(Color.white.opacity(0.06))))
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 12, style: .continuous)
