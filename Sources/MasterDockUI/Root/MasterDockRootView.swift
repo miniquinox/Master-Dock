@@ -285,18 +285,41 @@ public struct MasterDockRootView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(
             ZStack {
-                // 1. Deep Native Apple Gaussian Backdrop Blur across the dock column
-                VisualEffectBlur(material: .underWindowBackground, blendingMode: .behindWindow, state: .active)
+                // 1. Heavy Native Apple Gaussian Backdrop Diffusion with Progressive Feathered Falloff
+                VisualEffectBlur(material: .fullScreenUI, blendingMode: .behindWindow, state: .active)
+                    .mask(
+                        LinearGradient(
+                            stops: [
+                                .init(color: .black, location: 0.0),
+                                .init(color: .black, location: 0.76),
+                                .init(color: .black.opacity(0.60), location: 0.86),
+                                .init(color: .black.opacity(0.18), location: 0.94),
+                                .init(color: .clear, location: 1.0)
+                            ],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
                 
-                // 2. Dark Neutral Scrim / Dimming Tint (Exact macOS Notification Center depth)
-                Color(red: 0.08, green: 0.08, blue: 0.10).opacity(0.48)
+                // 2. Ambient Dark Dimming Tint Vignette (Matching Notification Center depth)
+                LinearGradient(
+                    stops: [
+                        .init(color: Color.black.opacity(0.48), location: 0.0),
+                        .init(color: Color.black.opacity(0.44), location: 0.76),
+                        .init(color: Color.black.opacity(0.22), location: 0.86),
+                        .init(color: Color.black.opacity(0.06), location: 0.94),
+                        .init(color: Color.clear, location: 1.0)
+                    ],
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
                 
-                // 3. Subtle top ambient specular light reflection
+                // 3. Delicate Top Specular Edge Highlight fading off to the right
                 LinearGradient(
                     stops: [
                         .init(color: Color.white.opacity(0.12), location: 0.0),
-                        .init(color: Color.white.opacity(0.04), location: 0.50),
-                        .init(color: Color.clear, location: 0.85)
+                        .init(color: Color.white.opacity(0.05), location: 0.65),
+                        .init(color: Color.clear, location: 0.88)
                     ],
                     startPoint: .leading,
                     endPoint: .trailing

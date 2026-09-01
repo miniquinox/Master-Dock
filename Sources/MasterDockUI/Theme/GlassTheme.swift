@@ -95,7 +95,7 @@ public extension View {
             .background(
                 ZStack {
                     // 1. Local Native Frosted Material Blur for this specific card
-                    VisualEffectBlur(material: .hudWindow, blendingMode: .behindWindow, state: .active)
+                    VisualEffectBlur(material: .hudWindow, blendingMode: .withinWindow, state: .active)
                     
                     // 2. macOS Notification Center Translucent Dark Glass Surface
                     RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
