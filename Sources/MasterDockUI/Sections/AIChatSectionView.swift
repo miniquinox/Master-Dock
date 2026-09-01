@@ -278,10 +278,7 @@ private struct ChatMessageBubble: View {
                             .foregroundColor(.white.opacity(0.85))
                     }
                     
-                    Text(msg.content)
-                        .font(AppTypography.body)
-                        .foregroundColor(.white.opacity(0.95))
-                        .textSelection(.enabled)
+                    MarkdownTextView(text: msg.content)
                 }
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
@@ -459,12 +456,15 @@ public struct AIVoiceOverlayView: View {
                         }
                         
                         ScrollView(.vertical, showsIndicators: true) {
-                            Text(aiResponseText.isEmpty ? (isAIStreaming ? "Thinking..." : "No response generated.") : aiResponseText)
-                                .font(AppTypography.body)
-                                .foregroundColor(.white.opacity(0.95))
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .textSelection(.enabled)
-                                .padding(.vertical, 4)
+                            if aiResponseText.isEmpty {
+                                Text(isAIStreaming ? "Thinking..." : "No response generated.")
+                                    .font(AppTypography.body)
+                                    .foregroundColor(.white.opacity(0.7))
+                                    .padding(.vertical, 4)
+                            } else {
+                                MarkdownTextView(text: aiResponseText)
+                                    .padding(.vertical, 4)
+                            }
                         }
                         .frame(maxHeight: 280)
                     }
