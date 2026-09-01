@@ -283,6 +283,28 @@ public struct MasterDockRootView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background(Color.clear)
+        .background(
+            ZStack {
+                // 1. Deep Native Apple Gaussian Backdrop Blur across the dock column
+                VisualEffectBlur(material: .underWindowBackground, blendingMode: .behindWindow, state: .active)
+                
+                // 2. Dark Neutral Scrim / Dimming Tint (Exact macOS Notification Center depth)
+                Color(red: 0.08, green: 0.08, blue: 0.10).opacity(0.48)
+                
+                // 3. Subtle top ambient specular light reflection
+                LinearGradient(
+                    stops: [
+                        .init(color: Color.white.opacity(0.12), location: 0.0),
+                        .init(color: Color.white.opacity(0.04), location: 0.50),
+                        .init(color: Color.clear, location: 0.85)
+                    ],
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
+                .frame(height: 1)
+                .frame(maxHeight: .infinity, alignment: .top)
+            }
+            .ignoresSafeArea()
+        )
     }
 }
