@@ -20,10 +20,20 @@ public enum GlassTheme {
         endPoint: .bottomTrailing
     )
     
+    // Dark Translucent Nested Inset Surface (Matching macOS Notification Center Insets)
     public static let pillGlassFill = LinearGradient(
         colors: [
-            Color.white.opacity(0.10),
-            Color.white.opacity(0.04)
+            Color.black.opacity(0.24),
+            Color.black.opacity(0.32)
+        ],
+        startPoint: .topLeading,
+        endPoint: .bottomTrailing
+    )
+    
+    public static let pillGlassHoverFill = LinearGradient(
+        colors: [
+            Color.white.opacity(0.12),
+            Color.white.opacity(0.06)
         ],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
@@ -120,13 +130,8 @@ public extension View {
     func liquidPillStyle(cornerRadius: CGFloat = GlassTheme.pillRadius, isHovered: Bool = false) -> some View {
         self
             .background(
-                ZStack {
-                    VisualEffectBlur(material: .hudWindow, blendingMode: .behindWindow, state: .active)
-                    
-                    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                        .fill(isHovered ? GlassTheme.liquidGlassHoverFill : GlassTheme.pillGlassFill)
-                }
-                .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                    .fill(isHovered ? GlassTheme.pillGlassHoverFill : GlassTheme.pillGlassFill)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
