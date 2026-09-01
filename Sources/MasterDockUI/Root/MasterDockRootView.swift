@@ -176,13 +176,23 @@ public struct MasterDockRootView: View {
                                 .padding(.horizontal, 10)
                                 .padding(.vertical, 5)
                                 .background(
-                                    Capsule()
-                                        .fill(selectedTab == tab ? AnyShapeStyle(GlassTheme.accentBlue.opacity(0.90)) : AnyShapeStyle(GlassTheme.pillGlassFill))
+                                    ZStack {
+                                        if selectedTab == tab {
+                                            Capsule()
+                                                .fill(GlassTheme.accentBlue.opacity(0.90))
+                                        } else {
+                                            VisualEffectBlur(material: .hudWindow, blendingMode: .behindWindow, state: .active)
+                                            Capsule()
+                                                .fill(GlassTheme.pillGlassFill)
+                                        }
+                                    }
+                                    .clipShape(Capsule())
                                 )
                                 .overlay(
                                     Capsule()
-                                        .strokeBorder(selectedTab == tab ? AnyShapeStyle(Color.white.opacity(0.5)) : AnyShapeStyle(GlassTheme.subtleSpecularBorder), lineWidth: 0.8)
+                                        .strokeBorder(selectedTab == tab ? AnyShapeStyle(Color.white.opacity(0.5)) : AnyShapeStyle(GlassTheme.subtleSpecularBorder), lineWidth: 0.65)
                                 )
+                                .shadow(color: Color.black.opacity(0.20), radius: 3, x: 0, y: 1)
                         }
                         .buttonStyle(.plain)
                     }
@@ -270,54 +280,9 @@ public struct MasterDockRootView: View {
                 .padding(.top, 4)
                 .padding(.bottom, 24)
             }
-            .mask(
-                LinearGradient(
-                    stops: [
-                        .init(color: .clear, location: 0.0),
-                        .init(color: .black, location: 0.04),
-                        .init(color: .black, location: 0.94),
-                        .init(color: .clear, location: 1.0)
-                    ],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-            )
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background(
-            ZStack {
-                // Native Apple Even Blur Backdrop with Smooth Right-Edge Dissolve
-                VisualEffectBlur(material: .fullScreenUI, blendingMode: .behindWindow, state: .active)
-                    .mask(
-                        LinearGradient(
-                            stops: [
-                                .init(color: .black, location: 0.0),
-                                .init(color: .black, location: 0.50),
-                                .init(color: .black.opacity(0.70), location: 0.72),
-                                .init(color: .black.opacity(0.28), location: 0.88),
-                                .init(color: .clear, location: 0.98),
-                                .init(color: .clear, location: 1.00)
-                            ],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
-                    )
-                
-                // Subtle specular top edge highlight fading smoothly toward the right
-                LinearGradient(
-                    stops: [
-                        .init(color: Color.white.opacity(0.14), location: 0.0),
-                        .init(color: Color.white.opacity(0.06), location: 0.50),
-                        .init(color: Color.clear, location: 0.85)
-                    ],
-                    startPoint: .leading,
-                    endPoint: .trailing
-                )
-                .frame(height: 1)
-                .frame(maxHeight: .infinity, alignment: .top)
-            }
-            .ignoresSafeArea()
-        )
+        .background(Color.clear)
     }
 }

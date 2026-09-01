@@ -1,11 +1,11 @@
 import SwiftUI
 
 public enum GlassTheme {
-    // Pure Transparent Glass Card Surfaces (No Shadows, Blurred Glass Feel)
+    // Apple Native Notification Center Translucent Card Surfaces
     public static let liquidGlassFill = LinearGradient(
         colors: [
-            Color.white.opacity(0.14),
-            Color.white.opacity(0.05)
+            Color(red: 0.16, green: 0.17, blue: 0.19).opacity(0.72),
+            Color(red: 0.10, green: 0.11, blue: 0.13).opacity(0.80)
         ],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
@@ -13,8 +13,8 @@ public enum GlassTheme {
     
     public static let liquidGlassHoverFill = LinearGradient(
         colors: [
-            Color.white.opacity(0.20),
-            Color.white.opacity(0.08)
+            Color(red: 0.20, green: 0.21, blue: 0.24).opacity(0.78),
+            Color(red: 0.13, green: 0.14, blue: 0.17).opacity(0.86)
         ],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
@@ -22,20 +22,20 @@ public enum GlassTheme {
     
     public static let pillGlassFill = LinearGradient(
         colors: [
-            Color.white.opacity(0.12),
+            Color.white.opacity(0.10),
             Color.white.opacity(0.04)
         ],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
     )
     
-    // Apple Sculpted Specular Glass Border Shine (Light striking from top-left)
+    // Apple Delicate Specular Rim Bevels (Exact Notification Center Match)
     public static let liquidSpecularBorder = LinearGradient(
         stops: [
-            .init(color: Color.white.opacity(0.50), location: 0.0),   // Crisp bright top-left specular shine
-            .init(color: Color.white.opacity(0.28), location: 0.25),  // Top rim illumination
-            .init(color: Color.white.opacity(0.10), location: 0.65),  // Soft side rim
-            .init(color: Color.white.opacity(0.22), location: 1.0)    // Gentle bottom-right reflection
+            .init(color: Color.white.opacity(0.24), location: 0.0),
+            .init(color: Color.white.opacity(0.12), location: 0.30),
+            .init(color: Color.white.opacity(0.03), location: 0.70),
+            .init(color: Color.white.opacity(0.08), location: 1.0)
         ],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
@@ -43,10 +43,10 @@ public enum GlassTheme {
     
     public static let subtleSpecularBorder = LinearGradient(
         stops: [
-            .init(color: Color.white.opacity(0.32), location: 0.0),
-            .init(color: Color.white.opacity(0.18), location: 0.30),
-            .init(color: Color.white.opacity(0.06), location: 0.70),
-            .init(color: Color.white.opacity(0.14), location: 1.0)
+            .init(color: Color.white.opacity(0.18), location: 0.0),
+            .init(color: Color.white.opacity(0.08), location: 0.30),
+            .init(color: Color.white.opacity(0.02), location: 0.70),
+            .init(color: Color.white.opacity(0.06), location: 1.0)
         ],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
@@ -75,7 +75,7 @@ public enum GlassTheme {
     public static let pillRadius: CGFloat = 12
     
     // Ambient Depth
-    public static let ambientShadow = Color.clear
+    public static let ambientShadow = Color.black.opacity(0.30)
     public static let specularGlow = Color.white.opacity(0.12)
 }
 
@@ -83,26 +83,54 @@ public extension View {
     func liquidGlassCard(cornerRadius: CGFloat = GlassTheme.cardRadius, isHovered: Bool = false) -> some View {
         self
             .background(
-                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .fill(isHovered ? GlassTheme.liquidGlassHoverFill : GlassTheme.liquidGlassFill)
+                ZStack {
+                    // 1. Local Native Frosted Material Blur for this specific card
+                    VisualEffectBlur(material: .hudWindow, blendingMode: .behindWindow, state: .active)
+                    
+                    // 2. macOS Notification Center Translucent Dark Glass Surface
+                    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                        .fill(isHovered ? GlassTheme.liquidGlassHoverFill : GlassTheme.liquidGlassFill)
+                    
+                    // 3. Delicate Top Specular Inner Lighting Sheen
+                    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                        .fill(
+                            LinearGradient(
+                                colors: [
+                                    Color.white.opacity(0.06),
+                                    Color.white.opacity(0.01),
+                                    Color.clear
+                                ],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )
+                        )
+                }
+                .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
             )
             .overlay(
-                // Apple Native Glass Border Rim Shine
+                // 4. Subtle 0.65pt Specular Rim
                 RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .strokeBorder(GlassTheme.liquidSpecularBorder, lineWidth: 0.85)
+                    .strokeBorder(GlassTheme.liquidSpecularBorder, lineWidth: 0.65)
             )
             .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+            .shadow(color: Color.black.opacity(0.30), radius: isHovered ? 12 : 8, x: 0, y: isHovered ? 5 : 3)
+            .shadow(color: Color.black.opacity(0.12), radius: 2, x: 0, y: 1)
     }
     
     func liquidPillStyle(cornerRadius: CGFloat = GlassTheme.pillRadius, isHovered: Bool = false) -> some View {
         self
             .background(
-                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .fill(isHovered ? GlassTheme.liquidGlassHoverFill : GlassTheme.pillGlassFill)
+                ZStack {
+                    VisualEffectBlur(material: .hudWindow, blendingMode: .behindWindow, state: .active)
+                    
+                    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                        .fill(isHovered ? GlassTheme.liquidGlassHoverFill : GlassTheme.pillGlassFill)
+                }
+                .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
             )
             .overlay(
                 RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .strokeBorder(GlassTheme.subtleSpecularBorder, lineWidth: 0.75)
+                    .strokeBorder(GlassTheme.subtleSpecularBorder, lineWidth: 0.60)
             )
             .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
     }
