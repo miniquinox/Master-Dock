@@ -83,10 +83,10 @@ public final class ChecklistService: ObservableObject, ChecklistServiceProtocol 
     }
     
     private func loadItems() {
-        if let saved = PersistenceController.shared.load([ChecklistItem].self, forKey: storageKey), !saved.isEmpty {
+        if let saved = PersistenceController.shared.load([ChecklistItem].self, forKey: storageKey) {
             self.items = saved
         } else {
-            // Default sample tasks for new users
+            // Default sample tasks for brand new users on initial run
             self.items = [
                 ChecklistItem(title: "Review daily priority tasks", isCompleted: true, priority: .high),
                 ChecklistItem(title: "Check morning calendar and sync calls", isCompleted: false, priority: .medium),
