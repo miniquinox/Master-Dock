@@ -44,7 +44,17 @@ public final class MultitouchManager: ObservableObject {
                     }
                 }
                 
-                if activeTouches.count == 2 {
+                if activeTouches.count == 1 {
+                    let x = Double(activeTouches[0].normalizedPosition.position.x)
+                    let y = Double(activeTouches[0].normalizedPosition.position.y)
+                    manager.stateMachine.processTouches(
+                        fingerCount: 1,
+                        averageX: x,
+                        averageY: y,
+                        minX: x,
+                        timestamp: timestamp
+                    )
+                } else if activeTouches.count == 2 {
                     let minX = Double(min(activeTouches[0].normalizedPosition.position.x, activeTouches[1].normalizedPosition.position.x))
                     let avgX = Double(activeTouches[0].normalizedPosition.position.x + activeTouches[1].normalizedPosition.position.x) / 2.0
                     let avgY = Double(activeTouches[0].normalizedPosition.position.y + activeTouches[1].normalizedPosition.position.y) / 2.0
@@ -56,6 +66,8 @@ public final class MultitouchManager: ObservableObject {
                         timestamp: timestamp
                     )
                 } else if activeTouches.isEmpty {
+                    manager.stateMachine.finishGesture()
+                } else {
                     manager.stateMachine.finishGesture()
                 }
             }, context)

@@ -88,8 +88,8 @@ public final class DockViewModel: ObservableObject {
     private func handleGestureState(_ state: GestureDockState) {
         switch state {
         case .trackingLeftSwipe(let progress, _):
-            let isPastHalf = progress >= 0.50
-            if isPastHalf && !isVoiceModeActive {
+            let isPastVoice = progress >= 1.60
+            if isPastVoice && !isVoiceModeActive {
                 self.isVoiceModeActive = true
             }
             windowController.updateInteractiveProgress(progress, mode: isVoiceModeActive ? .expandedVoice : .standardDock)

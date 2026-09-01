@@ -27,15 +27,50 @@ struct TestRunner {
             g.setUp()
             g.testInitialStateIsIdle()
         }
-        await runTest("testLeftEdgeTwoFingerSwipeStartsTracking") {
+        await runTest("testLeftEdgeSequentialSwipeStartsTracking") {
             let g = GestureStateMachineTests()
             g.setUp()
-            g.testLeftEdgeTwoFingerSwipeStartsTracking()
+            g.testLeftEdgeSequentialSwipeStartsTracking()
+        }
+        await runTest("testDirectTwoFingerTouchIgnored") {
+            let g = GestureStateMachineTests()
+            g.setUp()
+            g.testDirectTwoFingerTouchIgnored()
+        }
+        await runTest("testTouchNotAtExtremeEdgeIgnored") {
+            let g = GestureStateMachineTests()
+            g.setUp()
+            g.testTouchNotAtExtremeEdgeIgnored()
+        }
+        await runTest("testTwoFingerTouchWithZeroSlideDistanceIgnored") {
+            let g = GestureStateMachineTests()
+            g.setUp()
+            g.testTwoFingerTouchWithZeroSlideDistanceIgnored()
+        }
+        await runTest("testSingleFingerInMiddleThenSecondFingerIgnored") {
+            let g = GestureStateMachineTests()
+            g.setUp()
+            g.testSingleFingerInMiddleThenSecondFingerIgnored()
+        }
+        await runTest("testDelayedSecondFingerIgnored") {
+            let g = GestureStateMachineTests()
+            g.setUp()
+            g.testDelayedSecondFingerIgnored()
+        }
+        await runTest("testSingleFingerDragIgnored") {
+            let g = GestureStateMachineTests()
+            g.setUp()
+            g.testSingleFingerDragIgnored()
         }
         await runTest("testLeftEdgeSwipeProgressAndCommitStandardDock") {
             let g = GestureStateMachineTests()
             g.setUp()
             g.testLeftEdgeSwipeProgressAndCommitStandardDock()
+        }
+        await runTest("testLeftFingerAt25PercentReachesMaxOpenProgress") {
+            let g = GestureStateMachineTests()
+            g.setUp()
+            g.testLeftFingerAt25PercentReachesMaxOpenProgress()
         }
         await runTest("testLeftEdgeSwipePastHalfCommitsVoiceMode") {
             let g = GestureStateMachineTests()
@@ -46,11 +81,6 @@ struct TestRunner {
             let g = GestureStateMachineTests()
             g.setUp()
             g.testTopEdgeTwoFingerSwipeCommitsVoiceMode()
-        }
-        await runTest("testSingleFingerIgnored") {
-            let g = GestureStateMachineTests()
-            g.setUp()
-            g.testSingleFingerIgnored()
         }
         await runTest("testLeftEdgeSwipeWhileOpenClosesDock") {
             let g = GestureStateMachineTests()

@@ -3,7 +3,7 @@ set -e
 
 BUILD_DIR=".build"
 CACHE_DIR="${BUILD_DIR}/cache"
-SDK_PATH="/Library/Developer/CommandLineTools/SDKs/MacOSX26.5.sdk"
+SDK_PATH="${SDK_PATH:-$(xcrun --show-sdk-path)}"
 
 mkdir -p "${BUILD_DIR}/bin"
 mkdir -p "${CACHE_DIR}"
