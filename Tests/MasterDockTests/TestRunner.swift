@@ -144,6 +144,10 @@ struct TestRunner {
             let a = AIServiceMockTests()
             a.testChecklistNaturalLanguagePhrasingIntent()
         }
+        await runTest("testChecklistConversationalFollowUpIntent") {
+            let a = AIServiceMockTests()
+            a.testChecklistConversationalFollowUpIntent()
+        }
         
         print("\n==================================================")
         print("SUMMARY: \(passed) Total Tests | All \(passed) Passed | 0 Failed")

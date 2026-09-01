@@ -99,4 +99,23 @@ final class AIServiceMockTests {
         XCTAssertNotNil(result5)
         XCTAssertTrue(checklistService.items.contains(where: { $0.title == "Buying coconut milk" }))
     }
+    
+    @MainActor
+    func testChecklistConversationalFollowUpIntent() {
+        let checklistService = ChecklistService()
+        let handler = ChecklistIntentHandler.shared
+        
+        let result1 = handler.handleIntent(prompt: "can you please add buying milk tonight to my tasks", checklistService: checklistService)
+        XCTAssertNotNil(result1)
+        XCTAssertTrue(checklistService.items.contains(where: { $0.title == "Buying milk tonight" }))
+        
+        let history = [
+            AIMessage(role: .user, content: "can you please add buying milk tonight to my tasks"),
+            AIMessage(role: .assistant, content: result1!.message)
+        ]
+        
+        let result2 = handler.handleIntent(prompt: "and also chocolate milk", conversationHistory: history, checklistService: checklistService)
+        XCTAssertNotNil(result2)
+        XCTAssertTrue(checklistService.items.contains(where: { $0.title == "Chocolate milk" }))
+    }
 }

@@ -6,10 +6,32 @@ public final class ChecklistIntentHandler {
     
     private init() {}
     
-    public func handleIntent(prompt: String, checklistService: ChecklistService) -> ChecklistActionResult? {
+    public func handleIntent(prompt: String, conversationHistory: [AIMessage] = [], checklistService: ChecklistService) -> ChecklistActionResult? {
         let trimmed = prompt.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return nil }
         let lower = trimmed.lowercased()
+        
+        // 0. Contextual Follow-up Check: e.g. "and also chocolate milk", "and buy bread", "also coffee", "plus eggs"
+        let lastAssistantMessage = conversationHistory.last(where: { $0.role == .assistant })?.content.lowercased() ?? ""
+        let isFollowUpChecklistContext = lastAssistantMessage.contains("checklist") || lastAssistantMessage.contains("task")
+        
+        if isFollowUpChecklistContext && (lower.hasPrefix("and also ") || lower.hasPrefix("also ") || lower.hasPrefix("and ") || lower.hasPrefix("plus ") || lower.hasPrefix("as well as ")) {
+            var taskPayload = trimmed
+            for prefix in ["and also ", "as well as ", "also ", "and ", "plus "] {
+                if taskPayload.lowercased().hasPrefix(prefix) {
+                    taskPayload = String(taskPayload.dropFirst(prefix.count)).trimmingCharacters(in: .whitespacesAndNewlines)
+                    break
+                }
+            }
+            let cleaned = cleanTaskTitle(taskPayload)
+            if !cleaned.isEmpty {
+                checklistService.addItem(title: cleaned)
+                return ChecklistActionResult(
+                    message: "✨ Added new task to your Daily Checklist:\n\n• **\(cleaned)**",
+                    didPerformAction: true
+                )
+            }
+        }
         
         // 1. Clear Completed Tasks
         if isClearCompletedIntent(lower) {

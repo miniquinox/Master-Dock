@@ -199,7 +199,7 @@ public final class DockViewModel: ObservableObject {
         conversationHistory.append(assistantMessage)
         
         // 1. Check if prompt is a natural language checklist update command
-        if let actionResult = ChecklistIntentHandler.shared.handleIntent(prompt: trimmed, checklistService: checklistService) {
+        if let actionResult = ChecklistIntentHandler.shared.handleIntent(prompt: trimmed, conversationHistory: Array(conversationHistory.dropLast()), checklistService: checklistService) {
             isAIStreaming = true
             Task {
                 // Stream confirmation smoothly with typing cadence
