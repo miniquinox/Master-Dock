@@ -132,6 +132,14 @@ struct TestRunner {
             let a = AIServiceMockTests()
             a.testPromptTemplateResolution()
         }
+        await runTest("testChecklistAddTasksIntent") {
+            let a = AIServiceMockTests()
+            a.testChecklistAddTasksIntent()
+        }
+        await runTest("testChecklistCompleteAndClearIntent") {
+            let a = AIServiceMockTests()
+            a.testChecklistCompleteAndClearIntent()
+        }
         
         print("\n==================================================")
         print("SUMMARY: \(passed) Total Tests | All \(passed) Passed | 0 Failed")

@@ -188,21 +188,44 @@ public final class DockViewModel: ObservableObject {
     }
     
     public func sendAIMessage(_ text: String) {
-        guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
         
-        let userMessage = AIMessage(role: .user, content: text)
+        let userMessage = AIMessage(role: .user, content: trimmed)
         conversationHistory.append(userMessage)
         
         let assistantMessageID = UUID()
         let assistantMessage = AIMessage(id: assistantMessageID, role: .assistant, content: "")
         conversationHistory.append(assistantMessage)
         
+        // 1. Check if prompt is a natural language checklist update command
+        if let actionResult = ChecklistIntentHandler.shared.handleIntent(prompt: trimmed, checklistService: checklistService) {
+            isAIStreaming = true
+            Task {
+                // Stream confirmation smoothly with typing cadence
+                let words = actionResult.message.components(separatedBy: " ")
+                for (idx, word) in words.enumerated() {
+                    try? await Task.sleep(nanoseconds: 20_000_000) // 20ms
+                    await MainActor.run {
+                        if let index = self.conversationHistory.firstIndex(where: { $0.id == assistantMessageID }) {
+                            self.conversationHistory[index].content += (idx == 0 ? "" : " ") + word
+                        }
+                    }
+                }
+                await MainActor.run {
+                    self.isAIStreaming = false
+                }
+            }
+            return
+        }
+        
+        // 2. Otherwise route to AI Foundation Model / LLM Stream
         isAIStreaming = true
         updateAIService()
         
         Task {
             do {
-                let stream = aiService.sendMessageStream(prompt: text, conversationHistory: conversationHistory.dropLast())
+                let stream = aiService.sendMessageStream(prompt: trimmed, conversationHistory: conversationHistory.dropLast())
                 for try await chunk in stream {
                     await MainActor.run {
                         if let index = self.conversationHistory.firstIndex(where: { $0.id == assistantMessageID }) {

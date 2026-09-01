@@ -54,7 +54,7 @@ let package = Package(
         // AI & Audio: Streaming LLMs, Voice Recording Pipeline, Waveforms, Prompt Actions
         .target(
             name: "MasterDockAI",
-            dependencies: ["MasterDockCore"],
+            dependencies: ["MasterDockCore", "MasterDockServices"],
             path: "Sources/MasterDockAI"
         ),
         // UI Design System: Liquid Glass, Waveforms, Cards, Buttons, and Section Views
