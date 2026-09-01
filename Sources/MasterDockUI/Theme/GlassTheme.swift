@@ -4,8 +4,8 @@ public enum GlassTheme {
     // Apple Native Translucent Card Surfaces (Matching macOS Notification Center)
     public static let liquidGlassFill = LinearGradient(
         colors: [
-            Color(white: 0.22).opacity(0.60),
-            Color(white: 0.14).opacity(0.65)
+            Color(white: 0.18).opacity(0.48),
+            Color(white: 0.10).opacity(0.54)
         ],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
@@ -13,8 +13,8 @@ public enum GlassTheme {
     
     public static let liquidGlassHoverFill = LinearGradient(
         colors: [
-            Color(white: 0.28).opacity(0.70),
-            Color(white: 0.18).opacity(0.75)
+            Color(white: 0.24).opacity(0.58),
+            Color(white: 0.14).opacity(0.64)
         ],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
@@ -22,8 +22,8 @@ public enum GlassTheme {
     
     public static let pillGlassFill = LinearGradient(
         colors: [
-            Color.white.opacity(0.15),
-            Color.white.opacity(0.06)
+            Color.white.opacity(0.12),
+            Color.white.opacity(0.05)
         ],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
@@ -32,10 +32,10 @@ public enum GlassTheme {
     // Apple Delicate Specular Rim Bevels
     public static let liquidSpecularBorder = LinearGradient(
         colors: [
-            Color.white.opacity(0.35),
-            Color.white.opacity(0.12),
-            Color.white.opacity(0.04),
-            Color.white.opacity(0.20)
+            Color.white.opacity(0.24),
+            Color.white.opacity(0.08),
+            Color.white.opacity(0.03),
+            Color.white.opacity(0.14)
         ],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
@@ -43,10 +43,10 @@ public enum GlassTheme {
     
     public static let subtleSpecularBorder = LinearGradient(
         colors: [
-            Color.white.opacity(0.20),
-            Color.white.opacity(0.06),
+            Color.white.opacity(0.16),
+            Color.white.opacity(0.05),
             Color.white.opacity(0.02),
-            Color.white.opacity(0.10)
+            Color.white.opacity(0.08)
         ],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
@@ -75,8 +75,8 @@ public enum GlassTheme {
     public static let pillRadius: CGFloat = 12
     
     // Ambient Depth Shadows
-    public static let ambientShadow = Color.black.opacity(0.35)
-    public static let specularGlow = Color.white.opacity(0.12)
+    public static let ambientShadow = Color.black.opacity(0.28)
+    public static let specularGlow = Color.white.opacity(0.10)
 }
 
 public extension View {
@@ -85,17 +85,13 @@ public extension View {
             .background(
                 RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                     .fill(isHovered ? GlassTheme.liquidGlassHoverFill : GlassTheme.liquidGlassFill)
-                    .background(
-                        RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                            .fill(.ultraThinMaterial)
-                    )
             )
             .overlay(
                 RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                     .strokeBorder(GlassTheme.liquidSpecularBorder, lineWidth: 0.65)
             )
             .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
-            .shadow(color: GlassTheme.ambientShadow, radius: isHovered ? 12 : 7, x: 0, y: isHovered ? 6 : 3)
+            .shadow(color: GlassTheme.ambientShadow, radius: isHovered ? 10 : 5, x: 0, y: isHovered ? 4 : 2)
     }
     
     func liquidPillStyle(cornerRadius: CGFloat = GlassTheme.pillRadius, isHovered: Bool = false) -> some View {
@@ -103,10 +99,6 @@ public extension View {
             .background(
                 RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                     .fill(isHovered ? GlassTheme.liquidGlassHoverFill : GlassTheme.pillGlassFill)
-                    .background(
-                        RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                            .fill(.ultraThinMaterial)
-                    )
             )
             .overlay(
                 RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)

@@ -289,19 +289,46 @@ public struct MasterDockRootView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(
             ZStack {
-                // Real Apple Native Glass UI Backdrop
-                VisualEffectBlur(material: .hudWindow, blendingMode: .behindWindow, state: .active)
+                // Native Apple Even Blur Backdrop with Right-Edge Dissolve
+                VisualEffectBlur(material: .fullScreenUI, blendingMode: .behindWindow, state: .active)
+                    .mask(
+                        LinearGradient(
+                            stops: [
+                                .init(color: .black, location: 0.0),
+                                .init(color: .black, location: 0.65),
+                                .init(color: .black.opacity(0.60), location: 0.82),
+                                .init(color: .black.opacity(0.18), location: 0.94),
+                                .init(color: .clear, location: 1.0)
+                            ],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
                 
-                // Subtle specular top lighting edge
+                // Smooth ambient glass tint gradient fading off toward the right edge
                 LinearGradient(
-                    colors: [
-                        Color.white.opacity(0.06),
-                        Color.clear,
-                        Color.black.opacity(0.04)
+                    stops: [
+                        .init(color: Color.black.opacity(0.32), location: 0.0),
+                        .init(color: Color.black.opacity(0.24), location: 0.65),
+                        .init(color: Color.black.opacity(0.08), location: 0.88),
+                        .init(color: Color.clear, location: 1.0)
                     ],
-                    startPoint: .top,
-                    endPoint: .bottom
+                    startPoint: .leading,
+                    endPoint: .trailing
                 )
+                
+                // Subtle specular top edge highlight fading toward the right
+                LinearGradient(
+                    stops: [
+                        .init(color: Color.white.opacity(0.14), location: 0.0),
+                        .init(color: Color.white.opacity(0.06), location: 0.65),
+                        .init(color: Color.clear, location: 0.90)
+                    ],
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
+                .frame(height: 1)
+                .frame(maxHeight: .infinity, alignment: .top)
             }
             .ignoresSafeArea()
         )
