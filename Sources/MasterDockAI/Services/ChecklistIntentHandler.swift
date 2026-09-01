@@ -8,6 +8,7 @@ public final class ChecklistIntentHandler {
     
     public func handleIntent(prompt: String, checklistService: ChecklistService) -> ChecklistActionResult? {
         let trimmed = prompt.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
         let lower = trimmed.lowercased()
         
         // 1. Clear Completed Tasks
@@ -28,7 +29,7 @@ public final class ChecklistIntentHandler {
         }
         
         // 2. Complete / Mark Done
-        if let target = extractCompleteTaskTarget(from: trimmed, lower: lower) {
+        if let target = extractCompleteTaskTarget(from: trimmed) {
             if let matchedItem = findMatchingItem(target: target, in: checklistService.items) {
                 if !matchedItem.isCompleted {
                     checklistService.toggleItem(matchedItem)
@@ -46,7 +47,7 @@ public final class ChecklistIntentHandler {
         }
         
         // 3. Remove / Delete Task
-        if let target = extractDeleteTaskTarget(from: trimmed, lower: lower) {
+        if let target = extractDeleteTaskTarget(from: trimmed) {
             if let matchedItem = findMatchingItem(target: target, in: checklistService.items) {
                 checklistService.removeItem(matchedItem)
                 return ChecklistActionResult(
@@ -62,7 +63,7 @@ public final class ChecklistIntentHandler {
         }
         
         // 4. Add Tasks
-        if let newTasks = extractAddTasks(from: trimmed, lower: lower), !newTasks.isEmpty {
+        if let newTasks = extractAddTasks(from: trimmed), !newTasks.isEmpty {
             for task in newTasks {
                 checklistService.addItem(title: task)
             }
@@ -114,6 +115,8 @@ public final class ChecklistIntentHandler {
         return lower.contains("clear completed") ||
                lower.contains("clear done") ||
                lower.contains("remove completed") ||
+               lower.contains("delete completed") ||
+               lower == "clear checklist" ||
                lower == "clear checklist done"
     }
     
@@ -122,70 +125,84 @@ public final class ChecklistIntentHandler {
                (lower.contains("show") || lower.contains("what") || lower.contains("list") || lower.contains("view") || lower.contains("see") || lower.contains("check"))
     }
     
-    private func extractCompleteTaskTarget(from original: String, lower: String) -> String? {
-        let patterns = [
-            "mark task as completed", "mark task as complete", "mark as completed", "mark as complete",
-            "mark task as done", "mark as done", "complete task", "finish task", "check off task",
-            "check off", "complete", "finish", "done"
-        ]
+    private func extractCompleteTaskTarget(from original: String) -> String? {
+        var str = original.trimmingCharacters(in: .whitespacesAndNewlines)
+        var didMatchCompletionKeyword = false
         
-        for pattern in patterns {
-            if lower.hasPrefix(pattern) {
-                var remainder = String(original.dropFirst(pattern.count)).trimmingCharacters(in: .whitespacesAndNewlines)
-                remainder = stripPunctuationAndKeywords(remainder)
-                if !remainder.isEmpty { return remainder }
+        // Strip trailing completion keywords
+        let completionSuffixes = [
+            " as completed", " as complete", " as done", " as finished", " is done", " is complete", " is completed"
+        ]
+        for suffix in completionSuffixes {
+            if str.lowercased().hasSuffix(suffix) {
+                str = String(str.dropLast(suffix.count)).trimmingCharacters(in: .whitespacesAndNewlines)
+                didMatchCompletionKeyword = true
+                break
             }
         }
         
-        // Regex / middle patterns: e.g. "mark 'task 1' as done"
-        if lower.contains("mark ") && (lower.contains(" as done") || lower.contains(" as complete") || lower.contains(" as completed")) {
-            var extracted = original
-            if let markRange = lower.range(of: "mark ") {
-                extracted = String(extracted[markRange.upperBound...])
-            }
-            if let doneRange = extracted.lowercased().range(of: " as done") ?? extracted.lowercased().range(of: " as complete") ?? extracted.lowercased().range(of: " as completed") {
-                extracted = String(extracted[..<doneRange.lowerBound])
-            }
-            extracted = stripPunctuationAndKeywords(extracted)
-            if !extracted.isEmpty { return extracted }
-        }
-        
-        return nil
-    }
-    
-    private func extractDeleteTaskTarget(from original: String, lower: String) -> String? {
-        let patterns = [
-            "remove task", "delete task", "remove", "delete"
-        ]
-        
-        for pattern in patterns {
-            if lower.hasPrefix(pattern) {
-                var remainder = String(original.dropFirst(pattern.count)).trimmingCharacters(in: .whitespacesAndNewlines)
-                if remainder.lowercased().hasSuffix("from checklist") || remainder.lowercased().hasSuffix("from my checklist") || remainder.lowercased().hasSuffix("from tasks") {
-                    if let fromRange = remainder.lowercased().range(of: " from ") {
-                        remainder = String(remainder[..<fromRange.lowerBound])
-                    }
+        // Regex to strip conversational preamble
+        let pattern = #"^(can\s+you|could\s+you|would\s+you|please|let's|lets)?\s*(also)?\s*(please)?\s*(mark|check\s+off|complete|finish|cross\s+out|done)\s*(task|the\s+task|item|the\s+item)?\s*[:\-]?"#
+        if let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive) {
+            let range = NSRange(str.startIndex..<str.endIndex, in: str)
+            if let match = regex.firstMatch(in: str, options: [], range: range) {
+                if let swiftRange = Range(match.range, in: str) {
+                    str = String(str[swiftRange.upperBound...]).trimmingCharacters(in: .whitespacesAndNewlines)
+                    didMatchCompletionKeyword = true
                 }
-                remainder = stripPunctuationAndKeywords(remainder)
-                if !remainder.isEmpty { return remainder }
             }
         }
         
-        return nil
+        guard didMatchCompletionKeyword else { return nil }
+        str = stripPunctuationAndKeywords(str)
+        return str.isEmpty ? nil : str
     }
     
-    private func extractAddTasks(from original: String, lower: String) -> [String]? {
-        let isAddRelated = lower.hasPrefix("add ") ||
-                           lower.contains("add ") ||
-                           lower.hasPrefix("new task") ||
-                           lower.contains("new task") ||
-                           lower.hasPrefix("create task") ||
-                           lower.contains("create task") ||
-                           lower.contains("remind me to ") ||
-                           lower.contains("put ")
-        guard isAddRelated else { return nil }
+    private func extractDeleteTaskTarget(from original: String) -> String? {
+        var str = original.trimmingCharacters(in: .whitespacesAndNewlines)
+        var didMatchDeleteKeyword = false
         
-        var payload = original
+        // Strip trailing source phrases
+        let listSuffixes = [
+            " from my daily checklist", " from the daily checklist", " from my checklist", " from the checklist", " from checklist",
+            " from my todo list", " from my to do list", " from the todo list", " from todo list",
+            " from my task list", " from the task list", " from my tasks", " from the tasks", " from tasks",
+            " from my list", " from the list", " from list"
+        ]
+        for suffix in listSuffixes {
+            if str.lowercased().hasSuffix(suffix) {
+                str = String(str.dropLast(suffix.count)).trimmingCharacters(in: .whitespacesAndNewlines)
+            }
+        }
+        
+        // Regex to strip conversational preamble
+        let pattern = #"^(can\s+you|could\s+you|would\s+you|please|let's|lets)?\s*(also)?\s*(please)?\s*(delete|remove|clear|drop)\s*(task|the\s+task|item|the\s+item)?\s*[:\-]?"#
+        if let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive) {
+            let range = NSRange(str.startIndex..<str.endIndex, in: str)
+            if let match = regex.firstMatch(in: str, options: [], range: range) {
+                if let swiftRange = Range(match.range, in: str) {
+                    str = String(str[swiftRange.upperBound...]).trimmingCharacters(in: .whitespacesAndNewlines)
+                    didMatchDeleteKeyword = true
+                }
+            }
+        }
+        
+        guard didMatchDeleteKeyword else { return nil }
+        str = stripPunctuationAndKeywords(str)
+        return str.isEmpty ? nil : str
+    }
+    
+    private func extractAddTasks(from original: String) -> [String]? {
+        var payload = original.trimmingCharacters(in: .whitespacesAndNewlines)
+        let lower = payload.lowercased()
+        
+        let isAddRelated = lower.contains("add") ||
+                           lower.contains("task") ||
+                           lower.contains("remind me") ||
+                           lower.contains("put ") ||
+                           lower.contains("insert") ||
+                           lower.contains("include")
+        guard isAddRelated else { return nil }
         
         // Suffix list keywords to strip first (from longest to shortest)
         let suffixes = [
@@ -205,37 +222,25 @@ public final class ChecklistIntentHandler {
             let lowerPayload = payload.lowercased()
             if lowerPayload.hasSuffix(" \(suffix)") {
                 let range = lowerPayload.range(of: " \(suffix)", options: .backwards)!
-                payload = String(payload[..<range.lowerBound])
+                payload = String(payload[..<range.lowerBound]).trimmingCharacters(in: .whitespacesAndNewlines)
                 break
             }
         }
         
-        // Prefix triggers to strip (from longest to shortest)
-        let prefixes = [
-            "add to my daily checklist:", "add to my daily checklist", "add to the daily checklist:", "add to the daily checklist",
-            "add to my checklist:", "add to checklist:", "add to my checklist", "add to checklist",
-            "add to my to do list:", "add to my todo list:", "add to todo list:", "add to todo:", "add to to-do:",
-            "add to my to do list", "add to my todo list", "add to todo list", "add to todo", "add to to-do",
-            "add to my task list:", "add to the task list:", "add to my task list", "add to the task list",
-            "add to my tasks:", "add to tasks:", "add to my tasks", "add to tasks",
-            "add to my list:", "add to the list:", "add to list:", "add to my list", "add to the list", "add to list",
-            "put on my checklist:", "put on my checklist", "put on the checklist:", "put on the checklist",
-            "put on my list:", "put on my list", "put on the list:", "put on the list",
-            "put on my tasks:", "put on my tasks",
-            "add new tasks:", "add new task:", "add new tasks", "add new task",
-            "add tasks:", "add task:", "add tasks", "add task", "add a task:", "add a task",
-            "create new task:", "create new tasks:", "create task:", "create tasks:", "create a task:", "create task", "create tasks", "create a task",
-            "remind me to ", "please remind me to ", "please add ", "can you add ", "could you add ",
-            "put ", "add "
-        ]
+        // Comprehensive Regex to match ANY conversational preamble
+        // Handles: "can you also add", "could you please add", "i need to add", "please also add", "also add", "remind me to", etc.
+        let pattern = #"^(can\s+you|could\s+you|would\s+you|will\s+you|please|let's|lets|i\s+need\s+to|i\s+want\s+to|don't\s+forget\s+to|dont\s+forget\s+to|remember\s+to|and)?\s*(also)?\s*(please)?\s*(add|put|insert|include|create|remind\s+me\s+to)\s*(a\s+new\s+task|new\s+tasks|a\s+task|tasks|task|to\s+my\s+list|to\s+the\s+list|to\s+my\s+checklist|to\s+the\s+checklist|to\s+checklist|to\s+list|on\s+my\s+list|on\s+the\s+list|on\s+my\s+checklist|on\s+the\s+checklist)?\s*[:\-]?"#
         
-        for prefix in prefixes {
-            if payload.lowercased().hasPrefix(prefix) {
-                payload = String(payload.dropFirst(prefix.count)).trimmingCharacters(in: .whitespacesAndNewlines)
-                break
+        if let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive) {
+            let range = NSRange(payload.startIndex..<payload.endIndex, in: payload)
+            if let match = regex.firstMatch(in: payload, options: [], range: range) {
+                if let swiftRange = Range(match.range, in: payload) {
+                    payload = String(payload[swiftRange.upperBound...]).trimmingCharacters(in: .whitespacesAndNewlines)
+                }
             }
         }
         
+        // Strip any residual prefix colon, quotes, or dashes
         payload = payload.trimmingCharacters(in: CharacterSet(charactersIn: ": \n\r\t\"'"))
         guard !payload.isEmpty else { return nil }
         
@@ -260,8 +265,8 @@ public final class ChecklistIntentHandler {
                 }
             }
         } else {
-            // Check for comma or semicolon separation if multiple items
-            if payload.contains(",") && !payload.contains("http") {
+            // Comma separated if not a URL or code
+            if payload.contains(",") && !payload.contains("http") && !payload.contains("{") {
                 let parts = payload.components(separatedBy: ",")
                 for part in parts {
                     let cleaned = cleanTaskTitle(part)
@@ -295,7 +300,7 @@ public final class ChecklistIntentHandler {
         if str.lowercased().hasPrefix("task ") {
             str = String(str.dropFirst(5)).trimmingCharacters(in: .whitespacesAndNewlines)
         }
-        return str
+        return str.trimmingCharacters(in: CharacterSet(charactersIn: " :\"'#"))
     }
     
     private func findMatchingItem(target: String, in items: [ChecklistItem]) -> ChecklistItem? {
@@ -320,7 +325,7 @@ public final class ChecklistIntentHandler {
     }
 }
 
-public struct ChecklistActionResult {
+public struct ChecklistActionResult: Sendable {
     public let message: String
     public let didPerformAction: Bool
     

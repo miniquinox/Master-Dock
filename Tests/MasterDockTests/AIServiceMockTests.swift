@@ -90,5 +90,13 @@ final class AIServiceMockTests {
         let result3 = handler.handleIntent(prompt: "put buy organic coffee on my to do list", checklistService: checklistService)
         XCTAssertNotNil(result3)
         XCTAssertTrue(checklistService.items.contains(where: { $0.title == "Buy organic coffee" }))
+        
+        let result4 = handler.handleIntent(prompt: "Can you also add chocolate", checklistService: checklistService)
+        XCTAssertNotNil(result4)
+        XCTAssertTrue(checklistService.items.contains(where: { $0.title == "Chocolate" }))
+        
+        let result5 = handler.handleIntent(prompt: "Could you please add buying coconut milk", checklistService: checklistService)
+        XCTAssertNotNil(result5)
+        XCTAssertTrue(checklistService.items.contains(where: { $0.title == "Buying coconut milk" }))
     }
 }
