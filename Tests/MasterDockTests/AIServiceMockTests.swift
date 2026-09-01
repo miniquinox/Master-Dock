@@ -73,4 +73,22 @@ final class AIServiceMockTests {
         XCTAssertTrue(clearResult?.didPerformAction == true)
         XCTAssertFalse(checklistService.items.contains(where: { $0.id == item.id }))
     }
+    
+    @MainActor
+    func testChecklistNaturalLanguagePhrasingIntent() {
+        let checklistService = ChecklistService()
+        let handler = ChecklistIntentHandler.shared
+        
+        let result1 = handler.handleIntent(prompt: "add chatting with bange to my list", checklistService: checklistService)
+        XCTAssertNotNil(result1)
+        XCTAssertTrue(checklistService.items.contains(where: { $0.title == "Chatting with bange" }))
+        
+        let result2 = handler.handleIntent(prompt: "remind me to fix audio engine on my checklist", checklistService: checklistService)
+        XCTAssertNotNil(result2)
+        XCTAssertTrue(checklistService.items.contains(where: { $0.title == "Fix audio engine" }))
+        
+        let result3 = handler.handleIntent(prompt: "put buy organic coffee on my to do list", checklistService: checklistService)
+        XCTAssertNotNil(result3)
+        XCTAssertTrue(checklistService.items.contains(where: { $0.title == "Buy organic coffee" }))
+    }
 }

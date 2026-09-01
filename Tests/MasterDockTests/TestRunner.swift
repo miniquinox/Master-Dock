@@ -140,6 +140,10 @@ struct TestRunner {
             let a = AIServiceMockTests()
             a.testChecklistCompleteAndClearIntent()
         }
+        await runTest("testChecklistNaturalLanguagePhrasingIntent") {
+            let a = AIServiceMockTests()
+            a.testChecklistNaturalLanguagePhrasingIntent()
+        }
         
         print("\n==================================================")
         print("SUMMARY: \(passed) Total Tests | All \(passed) Passed | 0 Failed")

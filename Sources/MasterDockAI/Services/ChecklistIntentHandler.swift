@@ -175,40 +175,64 @@ public final class ChecklistIntentHandler {
     }
     
     private func extractAddTasks(from original: String, lower: String) -> [String]? {
-        let isAddRelated = lower.contains("add ") || lower.contains("new task") || lower.contains("create task") || lower.contains("remind me to ") || lower.contains("put on my checklist")
+        let isAddRelated = lower.hasPrefix("add ") ||
+                           lower.contains("add ") ||
+                           lower.hasPrefix("new task") ||
+                           lower.contains("new task") ||
+                           lower.hasPrefix("create task") ||
+                           lower.contains("create task") ||
+                           lower.contains("remind me to ") ||
+                           lower.contains("put ")
         guard isAddRelated else { return nil }
         
         var payload = original
         
-        // Strip common prefix triggers
+        // Suffix list keywords to strip first (from longest to shortest)
+        let suffixes = [
+            "to my daily checklist", "to the daily checklist", "to my checklist", "to the checklist", "to checklist",
+            "to my todo list", "to my to do list", "to the todo list", "to todo list", "to the to do list",
+            "to my task list", "to the task list", "to my tasks", "to the tasks", "to tasks",
+            "to my list", "to the list", "to list",
+            "on my daily checklist", "on the daily checklist", "on my checklist", "on the checklist", "on checklist",
+            "on my todo list", "on my to do list", "on the todo list", "on todo list",
+            "on my task list", "on the task list", "on my tasks", "on the tasks", "on tasks",
+            "on my list", "on the list", "on list",
+            "in my checklist", "in the checklist", "in checklist",
+            "in my todo list", "in my to do list", "in my list", "in the list", "in list", "in tasks"
+        ]
+        
+        for suffix in suffixes {
+            let lowerPayload = payload.lowercased()
+            if lowerPayload.hasSuffix(" \(suffix)") {
+                let range = lowerPayload.range(of: " \(suffix)", options: .backwards)!
+                payload = String(payload[..<range.lowerBound])
+                break
+            }
+        }
+        
+        // Prefix triggers to strip (from longest to shortest)
         let prefixes = [
+            "add to my daily checklist:", "add to my daily checklist", "add to the daily checklist:", "add to the daily checklist",
             "add to my checklist:", "add to checklist:", "add to my checklist", "add to checklist",
+            "add to my to do list:", "add to my todo list:", "add to todo list:", "add to todo:", "add to to-do:",
+            "add to my to do list", "add to my todo list", "add to todo list", "add to todo", "add to to-do",
+            "add to my task list:", "add to the task list:", "add to my task list", "add to the task list",
             "add to my tasks:", "add to tasks:", "add to my tasks", "add to tasks",
-            "add to my to do list:", "add to my todo list:", "add to todo list:", "add to todo:",
-            "add to my to do list", "add to my todo list", "add to todo list", "add to todo",
-            "add new task:", "add new tasks:", "add new task", "add new tasks",
-            "add tasks:", "add task:", "add tasks", "add task",
-            "create new task:", "create task:", "create tasks:", "create task", "create tasks",
-            "remind me to ", "put on my checklist:", "put on my checklist "
+            "add to my list:", "add to the list:", "add to list:", "add to my list", "add to the list", "add to list",
+            "put on my checklist:", "put on my checklist", "put on the checklist:", "put on the checklist",
+            "put on my list:", "put on my list", "put on the list:", "put on the list",
+            "put on my tasks:", "put on my tasks",
+            "add new tasks:", "add new task:", "add new tasks", "add new task",
+            "add tasks:", "add task:", "add tasks", "add task", "add a task:", "add a task",
+            "create new task:", "create new tasks:", "create task:", "create tasks:", "create a task:", "create task", "create tasks", "create a task",
+            "remind me to ", "please remind me to ", "please add ", "can you add ", "could you add ",
+            "put ", "add "
         ]
         
         for prefix in prefixes {
             if payload.lowercased().hasPrefix(prefix) {
                 payload = String(payload.dropFirst(prefix.count)).trimmingCharacters(in: .whitespacesAndNewlines)
                 break
-            }
-        }
-        
-        // Strip suffix triggers (e.g. "... to my checklist", "... to tasks")
-        let suffixes = [
-            "to my daily checklist", "to the daily checklist", "to my checklist", "to the checklist", "to checklist",
-            "to my todo list", "to my to do list", "to my tasks", "to tasks"
-        ]
-        for suffix in suffixes {
-            if payload.lowercased().hasSuffix(suffix) {
-                if let suffixRange = payload.lowercased().range(of: " \(suffix)") {
-                    payload = String(payload[..<suffixRange.lowerBound])
-                }
             }
         }
         
@@ -230,8 +254,9 @@ public final class ChecklistIntentHandler {
                         line = String(line[line.index(after: dotIndex)...]).trimmingCharacters(in: .whitespacesAndNewlines)
                     }
                 }
-                if !line.isEmpty {
-                    tasks.append(cleanTaskTitle(line))
+                let cleaned = cleanTaskTitle(line)
+                if !cleaned.isEmpty {
+                    tasks.append(cleaned)
                 }
             }
         } else {
@@ -245,7 +270,10 @@ public final class ChecklistIntentHandler {
                     }
                 }
             } else {
-                tasks.append(cleanTaskTitle(payload))
+                let cleaned = cleanTaskTitle(payload)
+                if !cleaned.isEmpty {
+                    tasks.append(cleaned)
+                }
             }
         }
         
@@ -257,7 +285,9 @@ public final class ChecklistIntentHandler {
         if str.lowercased().hasPrefix("and ") {
             str = String(str.dropFirst(4)).trimmingCharacters(in: .whitespacesAndNewlines)
         }
-        return str
+        str = str.trimmingCharacters(in: CharacterSet(charactersIn: " :\"'"))
+        guard !str.isEmpty else { return "" }
+        return str.prefix(1).uppercased() + str.dropFirst()
     }
     
     private func stripPunctuationAndKeywords(_ input: String) -> String {
