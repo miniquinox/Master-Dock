@@ -1,11 +1,11 @@
 import SwiftUI
 
 public enum GlassTheme {
-    // Apple Native macOS HUD Translucent Card Surfaces (Exact macOS Tone)
+    // Pure Transparent Glass Card Surfaces (No Shadows, Blurred Glass Feel)
     public static let liquidGlassFill = LinearGradient(
         colors: [
-            Color(red: 0.16, green: 0.17, blue: 0.19).opacity(0.78),
-            Color(red: 0.10, green: 0.11, blue: 0.13).opacity(0.85)
+            Color.white.opacity(0.14),
+            Color.white.opacity(0.05)
         ],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
@@ -13,8 +13,8 @@ public enum GlassTheme {
     
     public static let liquidGlassHoverFill = LinearGradient(
         colors: [
-            Color(red: 0.20, green: 0.21, blue: 0.24).opacity(0.84),
-            Color(red: 0.13, green: 0.14, blue: 0.17).opacity(0.90)
+            Color.white.opacity(0.20),
+            Color.white.opacity(0.08)
         ],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
@@ -22,8 +22,8 @@ public enum GlassTheme {
     
     public static let pillGlassFill = LinearGradient(
         colors: [
-            Color.white.opacity(0.13),
-            Color.white.opacity(0.06)
+            Color.white.opacity(0.12),
+            Color.white.opacity(0.04)
         ],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
@@ -32,10 +32,10 @@ public enum GlassTheme {
     // Apple Sculpted Specular Glass Border Shine (Light striking from top-left)
     public static let liquidSpecularBorder = LinearGradient(
         stops: [
-            .init(color: Color.white.opacity(0.48), location: 0.0),   // Crisp bright top-left specular shine
+            .init(color: Color.white.opacity(0.50), location: 0.0),   // Crisp bright top-left specular shine
             .init(color: Color.white.opacity(0.28), location: 0.25),  // Top rim illumination
-            .init(color: Color.white.opacity(0.08), location: 0.65),  // Soft side rim
-            .init(color: Color.white.opacity(0.18), location: 1.0)    // Gentle bottom-right reflection
+            .init(color: Color.white.opacity(0.10), location: 0.65),  // Soft side rim
+            .init(color: Color.white.opacity(0.22), location: 1.0)    // Gentle bottom-right reflection
         ],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
@@ -74,8 +74,8 @@ public enum GlassTheme {
     public static let dockRadius: CGFloat = 24
     public static let pillRadius: CGFloat = 12
     
-    // Ambient Depth Shadows
-    public static let ambientShadow = Color.black.opacity(0.35)
+    // Ambient Depth
+    public static let ambientShadow = Color.clear
     public static let specularGlow = Color.white.opacity(0.12)
 }
 
@@ -83,29 +83,8 @@ public extension View {
     func liquidGlassCard(cornerRadius: CGFloat = GlassTheme.cardRadius, isHovered: Bool = false) -> some View {
         self
             .background(
-                ZStack {
-                    // Native macOS HUD Glass Material Blur (within card)
-                    VisualEffectBlur(material: .hudWindow, blendingMode: .withinWindow, state: .active)
-                    
-                    // Native Apple HUD Smoky Translucent Tone
-                    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                        .fill(isHovered ? GlassTheme.liquidGlassHoverFill : GlassTheme.liquidGlassFill)
-                    
-                    // Subtle Top Specular Glass Inner Light Sheen
-                    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                        .fill(
-                            LinearGradient(
-                                colors: [
-                                    Color.white.opacity(0.08),
-                                    Color.white.opacity(0.02),
-                                    Color.clear
-                                ],
-                                startPoint: .top,
-                                endPoint: .bottom
-                            )
-                        )
-                }
-                .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                    .fill(isHovered ? GlassTheme.liquidGlassHoverFill : GlassTheme.liquidGlassFill)
             )
             .overlay(
                 // Apple Native Glass Border Rim Shine
@@ -113,8 +92,6 @@ public extension View {
                     .strokeBorder(GlassTheme.liquidSpecularBorder, lineWidth: 0.85)
             )
             .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
-            .shadow(color: Color.black.opacity(0.40), radius: isHovered ? 16 : 10, x: 0, y: isHovered ? 6 : 4)
-            .shadow(color: Color.black.opacity(0.18), radius: 3, x: 0, y: 1)
     }
     
     func liquidPillStyle(cornerRadius: CGFloat = GlassTheme.pillRadius, isHovered: Bool = false) -> some View {

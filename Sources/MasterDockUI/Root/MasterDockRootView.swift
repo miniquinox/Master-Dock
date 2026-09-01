@@ -183,7 +183,6 @@ public struct MasterDockRootView: View {
                                     Capsule()
                                         .strokeBorder(selectedTab == tab ? AnyShapeStyle(Color.white.opacity(0.5)) : AnyShapeStyle(GlassTheme.subtleSpecularBorder), lineWidth: 0.8)
                                 )
-                                .shadow(color: selectedTab == tab ? GlassTheme.accentBlue.opacity(0.4) : Color.clear, radius: 6, x: 0, y: 2)
                         }
                         .buttonStyle(.plain)
                     }
@@ -304,19 +303,6 @@ public struct MasterDockRootView: View {
                             endPoint: .trailing
                         )
                     )
-                
-                // Smooth ambient glass tint gradient fading off toward the right edge
-                LinearGradient(
-                    stops: [
-                        .init(color: Color.black.opacity(0.30), location: 0.0),
-                        .init(color: Color.black.opacity(0.22), location: 0.50),
-                        .init(color: Color.black.opacity(0.08), location: 0.82),
-                        .init(color: Color.clear, location: 0.96),
-                        .init(color: Color.clear, location: 1.00)
-                    ],
-                    startPoint: .leading,
-                    endPoint: .trailing
-                )
                 
                 // Subtle specular top edge highlight fading smoothly toward the right
                 LinearGradient(
